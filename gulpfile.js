@@ -2,11 +2,31 @@ var gulp = require('gulp');
 var babel = require('gulp-babel');
 var changed = require('gulp-changed');
 var plumber = require('gulp-plumber');
+var eslint = require('gulp-eslint');
 gulp.task('default', ['watch']);
 
 gulp.task('build', ['libs']);
 gulp.task('test', function(){});
 
+
+gulp.task('lint', function(){
+	gulp.src('libs/**/*.js')
+		.pipe(eslint({
+			'parserOptions' : {
+				'ecmaVersion' : '6'
+			},
+			'extends' : 'eslint:recommended',
+			'env' : {
+				'node' : 'true'
+			},
+			'rules': {
+				'space-before-function-paren' : 
+					[2, {"anonymous": "always", "named": "never"}]
+				}
+			}))
+		.pipe(eslint.formatEach('compact', process.stderr));
+		//.pipe(eslint.failOnError());
+});
 
 gulp.task('libs', function(){
 	gulp.src('libs/**/*.js')
