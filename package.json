@@ -2,7 +2,7 @@
   "name": "js_ovchinnikov94",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "index.js",
   "scripts": {
     "test": "./node_modules/.bin/gulp test",
     "build": "./node_modules/.bin/gulp build",
