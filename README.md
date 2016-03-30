@@ -1,1 +1,2 @@
-# js_learn_node
+# Chat
+Simple chat using node.js, websockets, Redis.
