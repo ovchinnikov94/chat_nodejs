@@ -58,7 +58,7 @@ wss.on('connection', function(ws){
 							onlineUsers.push({username : msg.username, websocket : ws, redis : client});
 						}
 						else if (authorized){
-							ws.send(JSON.stringify({type : 'authorize', success : true, admin : false, text : 'OK'})); 
+							ws.send(JSON.stringify({type : 'authorize', success : true, admin : false, username : msg.username})); 
 							username = msg.username;
 							send_prev_messages(ws, client);
 							onlineUsers.push({username : msg.username, websocket : ws, redis : client});
@@ -81,16 +81,22 @@ wss.on('connection', function(ws){
 				break;
 			case 'register':
 				client.get('user:' + msg.username, function(err, value){
-					if (!err) {
-						ws.send(JSON.stringify({type : 'error', text : 'Such username already exists!'}));
-						return;
-					}
+					if (value != null)
+						if (JSON.parse(value).username === msg.username) {
+							ws.send(JSON.stringify({type : 'error', text : 'Such username already exists!'}));
+							return;
+						}
 					var new_user = new Object();
 					new_user.username = msg.username;
 					new_user.password = msg.password;
 					new_user.firstname = msg.firstname;
 					new_user.lastname = msg.lastname;
+					console.log('Adding new user!');
 					client.set('user:' + msg.username, JSON.stringify(new_user));
+					ws.send(JSON.stringify({
+					type : 'register',
+					success : true
+				}));
 				});
 				break;
 			default:
@@ -111,6 +117,11 @@ wss.on('connection', function(ws){
 
 var send_prev_messages = function(websocket, redisClient){
 	redisClient.keys('message:*', function(err, keys){
+			keys.sort(function(x,y){
+				var a = x.split(':')[1];
+				var b = y.split(':')[1];
+				return parseInt(a) > parseInt(b);
+			});
 			for (var i = 0; i < keys.length; i++) {
 				redisClient.get(keys[i], function(err, value){
 					var v = JSON.parse(value);

@@ -69,6 +69,11 @@ ws.onmessage = function(message){
 				$("div-error").innerText = msg.text;
 			}
 			break;
+		case 'register':
+			if (msg.success)
+				$("div-success").style.display = 'block';
+				$("div-success").innerText = 'New username was registered!';
+			break;
 		case 'logout':
 			if (msg.success) {
 				$("user-info").style.display = 'none';
@@ -86,6 +91,7 @@ ws.onmessage = function(message){
 			alert('Uknown command: ' + msg.type);
 	}
 };
+
 
 $("msg_to_send").onkeydown = function(e){
 	if (e.which == 13 && !e.ctrlKey && !e.shiftKey) {
@@ -127,4 +133,27 @@ $("password").onkeydown = function(e){
 			password : $("password").value
 		}));
 	}
+};
+
+$("register-btn").onclick = function(){
+	/*if ($("register-password").value != $("register-confirm-pswd")){
+		$("register-password").className += " has-error";
+		$("register-confirm-pswd").className += " has-error";
+	}
+	else if ($("register-username").value.length === 0)
+		$("register-username").className += " has-error";
+	else if ($("register-password").value.length === 0)
+		$("register-password").className += " has-error";
+	else if ($("register-firstname").value.length === 0) 
+		$("register-firstname").className += " has-error";
+	else if ($("register-lastname").value.length === 0)
+		$("register-lastname").className += " has-error";
+	else */
+		ws.send(JSON.stringify({
+			type : 'register',
+			username : $("register-username").value,
+			password : $("register-password").value,
+			firstname : $("register-firstname").value,
+			lastname : $("register-lastname").value
+		}));
 };

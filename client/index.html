@@ -2,11 +2,17 @@
 <html>
 <head>
 	<title>Simple chat</title>
-	<script src= "js/bootstrap.js" type="text/javascript"></script>
-	<script src="js/jquery-1.12.2.min.js"></script>
+	<!--<script src= "js/bootstrap.min.js" type="text/javascript"></script>
 	<script src="js/main.js" type="text/javascript" defer> </script>
-	<link rel="stylesheet" type="text/css" href="css/bootstrap.css">
-	<link rel="stylesheet" type="text/css" href="css/jumbotron.css">
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css"> -->
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/bootstrap-theme.min.css">
+	<script src="js/main.js" type="text/javascript" defer> </script>
+	<script src="js/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/jumbotron.css"> 
+	<link rel="stylesheet" type="text/css" href="css/chat.css">
 	<meta charset="UTF-8">
 </head>
 <body>
@@ -25,6 +31,43 @@
 					</div>
 					<button class="btn btn-success" id="authorize">Sign in</button>
 				</div>
+				<ul class="nav navbar-nav">
+					<li class="dropdown">
+					  <a href="#" class="dropdown-toggle" role="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					    Register
+					    <span class="caret"></span>
+					  </a>
+					  <ul class="dropdown-menu">
+					    <li class="myli">
+					    	<div class="form-group">
+								<input class="form-control" placeholder="Username" type="text" id="register-username"/>
+							</div>
+					    </li>
+					    <li class="myli">
+					    	<div class="form-group">
+								<input class="form-control" placeholder="Password" type="text" id="register-password"/>
+							</div>
+					    </li>
+					    <li class="myli">
+					    	<div class="form-group">
+								<input class="form-control" placeholder="Confirm password" type="text" id="register-confirm-pswd"/>
+							</div>
+					    </li>
+					    <li class="myli">
+					    	<div class="form-group">
+								<input class="form-control" placeholder="Your firstname" type="text" id="register-firstname"/>
+							</div>
+					    </li>
+					    <li class="myli">
+					    	<div class="form-group">
+								<input class="form-control" placeholder="Your lastname" type="text" id="register-lastname"/>
+							</div>
+					    </li>
+					    <li role="separator" class="divider"></li>
+					    <li class="myli"><button class="btn btn-default" id="register-btn">Register</button></li>
+					  </ul>
+					</li>
+				</ul>
 				<div id="user-info" class="navbar-right" style="display:none">
 					<p id="signed_username" class="navbar-text navbar-right"></p>
 					<button class="btn btn-danger navbar-btn" id="logout-btn">Logout</button>
@@ -35,6 +78,7 @@
 	<div class="jumbotron">
 		<div  class="container" id="container">
 			<div id="div-error" style="display:none" class="alert alert-danger" role="alert"></div>
+			<div id="div-success" style="display:none" class="alert alert-success" role="alert"></div>
 			<div class="row">
 				
 	            <div class="panel panel-primary">
