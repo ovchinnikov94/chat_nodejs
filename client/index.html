@@ -45,12 +45,12 @@
 					    </li>
 					    <li class="myli">
 					    	<div class="form-group">
-								<input class="form-control" placeholder="Password" type="text" id="register-password"/>
+								<input class="form-control" placeholder="Password" type="password" id="register-password"/>
 							</div>
 					    </li>
 					    <li class="myli">
 					    	<div class="form-group">
-								<input class="form-control" placeholder="Confirm password" type="text" id="register-confirm-pswd"/>
+								<input class="form-control" placeholder="Confirm password" type="password" id="register-confirm-pswd"/>
 							</div>
 					    </li>
 					    <li class="myli">
@@ -77,85 +77,94 @@
 	</nav>
 	<div class="jumbotron">
 		<div  class="container" id="container">
+			<div class="row">
+				<div class="col-md-8">
+		            <div class="panel panel-primary">
+		                <div class="panel-body">
+		                    <ul id="messages" class="chat">
+		                        <li class="left clearfix"><span class="chat-img pull-left">
+		                            <img src="http://placehold.it/50/55C1E7/fff&text=U" alt="User Avatar" class="img-circle" />
+		                        	</span>
+		                            <div class="chat-body clearfix">
+		                                <div class="header">
+		                                    <strong class="primary-font">Jack Sparrow</strong> <small class="pull-right text-muted">
+		                                        <span class="glyphicon glyphicon-time"></span>12 mins ago</small>
+		                                </div>
+		                                <p>
+		                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare
+		                                    dolor, quis ullamcorper ligula sodales.
+		                                </p>
+		                            </div>
+		                        </li>
+
+
+		                        <li class="right clearfix"><span class="chat-img pull-right">
+		                            <img src="http://placehold.it/50/FA6F57/fff&text=ME" alt="User Avatar" class="img-circle" />
+		                        </span>
+		                            <div class="chat-body clearfix">
+		                                <div class="header">
+		                                    <small class=" text-muted"><span class="glyphicon glyphicon-time"></span>13 mins ago</small>
+		                                    <strong class="pull-right primary-font">Bhaumik Patel</strong>
+		                                </div>
+		                                <p>
+		                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare
+		                                    dolor, quis ullamcorper ligula sodales.
+		                                </p>
+		                            </div>
+		                        </li>
+		                        <li class="left clearfix"><span class="chat-img pull-left">
+		                            <img src="http://placehold.it/50/55C1E7/fff&text=U" alt="User Avatar" class="img-circle" />
+		                        </span>
+		                            <div class="chat-body clearfix">
+		                                <div class="header">
+		                                    <strong class="primary-font">Jack Sparrow</strong> <small class="pull-right text-muted">
+		                                        <span class="glyphicon glyphicon-time"></span>14 mins ago</small>
+		                                </div>
+		                                <p>
+		                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare
+		                                    dolor, quis ullamcorper ligula sodales.
+		                                </p>
+		                            </div>
+		                        </li>
+		                        <li class="right clearfix"><span class="chat-img pull-right">
+		                            <img src="http://placehold.it/50/FA6F57/fff&text=ME" alt="User Avatar" class="img-circle" />
+		                        </span>
+		                            <div class="chat-body clearfix">
+		                                <div class="header">
+		                                    <small class=" text-muted"><span class="glyphicon glyphicon-time"></span>15 mins ago</small>
+		                                    <strong class="pull-right primary-font">Bhaumik Patel</strong>
+		                                </div>
+		                                <p>
+		                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare
+		                                    dolor, quis ullamcorper ligula sodales.
+		                                </p>
+		                            </div>
+		                        </li>
+		                    </ul>
+		                </div>
+		                <div class="panel-footer">
+		                    <div class="input-group">
+		                        <input id="msg_to_send" type="text" class="form-control input-sm" placeholder="Type your message here..." />
+		                        <span class="input-group-btn">
+		                            <button id="msg_btn" class="btn btn-warning btn-sm" id="btn-chat">
+		                                Send</button>
+		                        </span>
+		                    </div>
+		                </div>
+			        </div>
+		        </div>
+		        
+		        <div class="col-md-4">
+		        	<table class="table table-hover">
+		        		<tbody id="online_users">
+		        			
+		        		</tbody>
+		        	</table>
+		        </div>
+
+			</div>
 			<div id="div-error" style="display:none" class="alert alert-danger" role="alert"></div>
 			<div id="div-success" style="display:none" class="alert alert-success" role="alert"></div>
-			<div class="row">
-				
-	            <div class="panel panel-primary">
-	                <div class="panel-body">
-	                    <ul id="messages" class="chat">
-	                        <li class="left clearfix"><span class="chat-img pull-left">
-	                            <img src="http://placehold.it/50/55C1E7/fff&text=U" alt="User Avatar" class="img-circle" />
-	                        	</span>
-	                            <div class="chat-body clearfix">
-	                                <div class="header">
-	                                    <strong class="primary-font">Jack Sparrow</strong> <small class="pull-right text-muted">
-	                                        <span class="glyphicon glyphicon-time"></span>12 mins ago</small>
-	                                </div>
-	                                <p>
-	                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare
-	                                    dolor, quis ullamcorper ligula sodales.
-	                                </p>
-	                            </div>
-	                        </li>
-
-
-	                        <li class="right clearfix"><span class="chat-img pull-right">
-	                            <img src="http://placehold.it/50/FA6F57/fff&text=ME" alt="User Avatar" class="img-circle" />
-	                        </span>
-	                            <div class="chat-body clearfix">
-	                                <div class="header">
-	                                    <small class=" text-muted"><span class="glyphicon glyphicon-time"></span>13 mins ago</small>
-	                                    <strong class="pull-right primary-font">Bhaumik Patel</strong>
-	                                </div>
-	                                <p>
-	                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare
-	                                    dolor, quis ullamcorper ligula sodales.
-	                                </p>
-	                            </div>
-	                        </li>
-	                        <li class="left clearfix"><span class="chat-img pull-left">
-	                            <img src="http://placehold.it/50/55C1E7/fff&text=U" alt="User Avatar" class="img-circle" />
-	                        </span>
-	                            <div class="chat-body clearfix">
-	                                <div class="header">
-	                                    <strong class="primary-font">Jack Sparrow</strong> <small class="pull-right text-muted">
-	                                        <span class="glyphicon glyphicon-time"></span>14 mins ago</small>
-	                                </div>
-	                                <p>
-	                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare
-	                                    dolor, quis ullamcorper ligula sodales.
-	                                </p>
-	                            </div>
-	                        </li>
-	                        <li class="right clearfix"><span class="chat-img pull-right">
-	                            <img src="http://placehold.it/50/FA6F57/fff&text=ME" alt="User Avatar" class="img-circle" />
-	                        </span>
-	                            <div class="chat-body clearfix">
-	                                <div class="header">
-	                                    <small class=" text-muted"><span class="glyphicon glyphicon-time"></span>15 mins ago</small>
-	                                    <strong class="pull-right primary-font">Bhaumik Patel</strong>
-	                                </div>
-	                                <p>
-	                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare
-	                                    dolor, quis ullamcorper ligula sodales.
-	                                </p>
-	                            </div>
-	                        </li>
-	                    </ul>
-	                </div>
-	                <div class="panel-footer">
-	                    <div class="input-group">
-	                        <input id="msg_to_send" type="text" class="form-control input-sm" placeholder="Type your message here..." />
-	                        <span class="input-group-btn">
-	                            <button id="msg_btn" class="btn btn-warning btn-sm" id="btn-chat">
-	                                Send</button>
-	                        </span>
-	                    </div>
-	                </div>
-		        </div>
-			</div>
-			
 		</div>
 	</div>
 </body>

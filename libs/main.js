@@ -13,11 +13,23 @@ wss.on('connection', function(ws){
 	var authorized = false;
 	var isAdmin = false;
 	
+
+	ws.on('close', function(){
+		console.log('User went out');
+		for (var i = 0; i < onlineUsers.length; i++)
+			if (onlineUsers[i].websocket === ws) {
+				onlineUsers[i].redisClient.close();
+				onlineUsers.splice(i, 1);
+				break;
+			}
+	});
+
+	client.on('error', function(err){
+		console.log('Error occured: ' + err);
+	});
+
 	ws.on('message', function(message) {
 		var msg = JSON.parse(message);
-		client.on('error', function(err){
-			console.log('Error occured: ' + err);
-		});
 		switch(msg.type) {
 			case 'message':
 				if (!authorized) {
@@ -30,7 +42,7 @@ wss.on('connection', function(ws){
 				new_msg.date = Date.now();
 				client.set('message:' + Date.now().toString(), JSON.stringify(new_msg));
 				new_msg.type = 'message';
-				ws.send(JSON.stringify(new_msg));
+				broadcast(new_msg);
 				break;
 			case 'authorize':
 				if ('admin' === msg.username && 'admin' === msg.password) {
@@ -80,37 +92,23 @@ wss.on('connection', function(ws){
 				ws.send(JSON.stringify({type : 'logout', success : true}));
 				break;
 			case 'register':
-				client.get('user:' + msg.username, function(err, value){
-					if (value != null)
-						if (JSON.parse(value).username === msg.username) {
-							ws.send(JSON.stringify({type : 'error', text : 'Such username already exists!'}));
-							return;
-						}
-					var new_user = new Object();
-					new_user.username = msg.username;
-					new_user.password = msg.password;
-					new_user.firstname = msg.firstname;
-					new_user.lastname = msg.lastname;
-					console.log('Adding new user!');
-					client.set('user:' + msg.username, JSON.stringify(new_user));
+				register_new_user(ws, client, msg);
+				break;
+			case 'online':
+				if (authorized)
 					ws.send(JSON.stringify({
-					type : 'register',
-					success : true
-				}));
-				});
+						type : 'online',
+						online : onlineUsers.map(function(x){return x.username;})
+					}));
+				else 
+					ws.send(JSON.stringify({
+						type : 'online',
+						online : []
+					}));
 				break;
 			default:
 				console.log('uknown command');
 		}
-
-		ws.on('close', function(){
-			console.log('User went out');
-			for (var i = 0; i < onlineUsers.length; i++)
-				if (onlineUsers[i].websocket === ws) {
-					onlineUsers.splice(i, 1);
-					break;
-				}
-		});
 
 	});
 });
@@ -120,8 +118,11 @@ var send_prev_messages = function(websocket, redisClient){
 			keys.sort(function(x,y){
 				var a = x.split(':')[1];
 				var b = y.split(':')[1];
-				return parseInt(a) > parseInt(b);
+				return Number(a) > Number(b);
 			});
+			for (var i = keys.length - 11; i >= 0; i--)
+				redisClient.del(keys[i]);
+			keys = keys.slice(-10);
 			for (var i = 0; i < keys.length; i++) {
 				redisClient.get(keys[i], function(err, value){
 					var v = JSON.parse(value);
@@ -130,4 +131,31 @@ var send_prev_messages = function(websocket, redisClient){
 				});
 			}
 		});
+};
+
+var broadcast = function(msg){
+	onlineUsers.forEach(function(x){
+		x.websocket.send(JSON.stringify(msg));
+	});
+};
+
+var register_new_user = function(websocket, redisClient, msg){
+	redisClient.get('user:' + msg.username, function(err, value){
+		if (value != null)
+			if (JSON.parse(value).username === msg.username) {
+				websocket.send(JSON.stringify({type : 'error', text : 'Such username already exists!'}));
+				return;
+			}
+		var new_user = new Object();
+		new_user.username = msg.username;
+		new_user.password = msg.password;
+		new_user.firstname = msg.firstname;
+		new_user.lastname = msg.lastname;
+		console.log('Adding new user!');
+		redisClient.set('user:' + msg.username, JSON.stringify(new_user));
+		websocket.send(JSON.stringify({
+			type : 'register',
+			success : true
+		}));
+	});
 };
