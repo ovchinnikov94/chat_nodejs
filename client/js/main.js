@@ -55,6 +55,13 @@ ws.onmessage = function(message){
 			onlineUsers = msg.online;
 			refreshOnlineUsers();
 			break;
+		case 'delete':
+			if (msg.success){
+				$("div-success").style.display = 'block';
+				$("div-success").innerText = 'User was removed from the system!';
+				window.setTimeout(function(){$("div-success").style.display = 'none';}, 2000);
+			}
+			break;
 		default:
 			alert('Uknown command: ' + msg.type);
 	}
@@ -172,12 +179,31 @@ var refreshOnlineUsers = function(){
 		var tr = document.createElement('tr');
 		var td1 = document.createElement('td');
 		var h4 = document.createElement('h4');
-		h4.innerText = user;
+		var p = document.createElement('p');
+		h4.innerText = "(" +user.username + ")";
+		p.innerText = user.firstname + " " + user.lastname;
 		td1.appendChild(h4);
 		var td2 = document.createElement('td');
-		td2.innerText = 'text him/her...';
-		tr.appendChild(td1);
+		td2.appendChild(p);
+		var td3 = document.createElement('td');
+		if (amIAdmin && user.username != 'admin') {
+			var btn = document.createElement('button');
+			btn.className = "btn btn-danger";
+			btn.innerText = "Delete";
+			td3.appendChild(btn);
+			btn.onclick = function(){
+				ws.send(JSON.stringify({
+					type : 'delete',
+					username : user.username
+				}));
+			};
+		}
+		else {
+			td3.innerText = "online";
+		}
 		tr.appendChild(td2);
+		tr.appendChild(td1);
+		tr.appendChild(td3);
 		$("online_users").appendChild(tr);
 	});
 };

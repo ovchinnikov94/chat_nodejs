@@ -1,3 +1,4 @@
+var async = require('async');
 var WebSocketServer = require('ws').Server;
 var redis = require('redis');
 var wss = new WebSocketServer({
@@ -18,7 +19,6 @@ wss.on('connection', function(ws){
 		console.log('User went out');
 		for (var i = 0; i < onlineUsers.length; i++)
 			if (onlineUsers[i].websocket === ws) {
-				onlineUsers[i].redisClient.close();
 				onlineUsers.splice(i, 1);
 				break;
 			}
@@ -96,15 +96,51 @@ wss.on('connection', function(ws){
 				break;
 			case 'online':
 				if (authorized)
-					ws.send(JSON.stringify({
-						type : 'online',
-						online : onlineUsers.map(function(x){return x.username;})
-					}));
+					async.map(
+						onlineUsers, 
+						function(x, callback){
+							client.get('user:' + x.username, function(err, value){
+								callback(null, value);
+							});
+						},
+						function(err, results){
+							ws.send(JSON.stringify({
+								type : 'online',
+								online : results.map(function(x){
+									var user = JSON.parse(x);
+									user.password = '';
+									return user;
+								})
+							}));
+						});
 				else 
 					ws.send(JSON.stringify({
 						type : 'online',
 						online : []
 					}));
+				break;
+			case 'delete':
+				if (authorized && isAdmin) {
+					client.keys('user:' + msg.username, function(err, keys){
+						keys.forEach(function(x){
+							client.del(x);
+						});
+						for (var i = 0; i < onlineUsers.length; i++) {
+							if (onlineUsers[i].username === msg.username){
+								onlineUsers[i].websocket.send(JSON.stringify({
+									type : 'logout',
+									success : true
+								}));
+								onlineUsers.splice(i, 1);
+								break;
+							}
+						}
+						ws.send(JSON.stringify({
+							type : 'delete',
+							success : true
+						}));
+					});
+				}
 				break;
 			default:
 				console.log('uknown command');
