@@ -8,7 +8,6 @@ var wss = new WebSocketServer({
 var onlineUsers = [];
 var onlineUsersCount = 0;
 
-console.log('Server is ready for connections');
 
 wss.on('connection', function(ws){
 	var client = redis.createClient();
