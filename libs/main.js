@@ -8,6 +8,8 @@ var wss = new WebSocketServer({
 var onlineUsers = [];
 var onlineUsersCount = 0;
 
+console.log('Server is ready for connections');
+
 wss.on('connection', function(ws){
 	var client = redis.createClient();
 	var username = '';
@@ -32,21 +34,10 @@ wss.on('connection', function(ws){
 		var msg = JSON.parse(message);
 		switch(msg.type) {
 			case 'message':
-				if (!authorized) {
-					ws.send(JSON.stringify({type: 'error', text : 'You are not authorized!'}));
-					break;
-				}
-				var new_msg = new Object();
-				new_msg.user = username;
-				new_msg.text = msg.text;
-				new_msg.date = Date.now();
-				client.set('message:' + Date.now().toString(), JSON.stringify(new_msg));
-				new_msg.type = 'message';
-				broadcast(new_msg);
+				handle_message(msg, username, authorized, client, ws);
 				break;
 			case 'authorize':
 				if ('admin' === msg.username && 'admin' === msg.password) {
-					console.log('Admin is here!');
 					username = msg.username;
 					isAdmin = true; authorized = true;
 					send_prev_messages(ws, client);
@@ -56,7 +47,6 @@ wss.on('connection', function(ws){
 				}
 				client.get('user:' + msg.username, function(err, value){
 					if (err || value === null) {
-						console.log('Error in authorization');
 						ws.send(JSON.stringify({type : 'authorize', success : false, text : 'No such username in the system!'}));
 					}
 					else {
@@ -81,66 +71,19 @@ wss.on('connection', function(ws){
 				});
 				break;
 			case 'logout':
-				for (var i = 0; i < onlineUsers.length; i++)
-					if (onlineUsers[i].websocket === ws) {
-						onlineUsers.splice(i, 1);
-						break;
-					}
+				handle_logout(ws);
 				username = '';
 				isAdmin = false;
 				authorized = false;
-				ws.send(JSON.stringify({type : 'logout', success : true}));
 				break;
 			case 'register':
 				register_new_user(ws, client, msg);
 				break;
 			case 'online':
-				if (authorized)
-					async.map(
-						onlineUsers, 
-						function(x, callback){
-							client.get('user:' + x.username, function(err, value){
-								callback(null, value);
-							});
-						},
-						function(err, results){
-							ws.send(JSON.stringify({
-								type : 'online',
-								online : results.map(function(x){
-									var user = JSON.parse(x);
-									user.password = '';
-									return user;
-								})
-							}));
-						});
-				else 
-					ws.send(JSON.stringify({
-						type : 'online',
-						online : []
-					}));
+				handle_online(authorized, client, ws);
 				break;
 			case 'delete':
-				if (authorized && isAdmin) {
-					client.keys('user:' + msg.username, function(err, keys){
-						keys.forEach(function(x){
-							client.del(x);
-						});
-						for (var i = 0; i < onlineUsers.length; i++) {
-							if (onlineUsers[i].username === msg.username){
-								onlineUsers[i].websocket.send(JSON.stringify({
-									type : 'logout',
-									success : true
-								}));
-								onlineUsers.splice(i, 1);
-								break;
-							}
-						}
-						ws.send(JSON.stringify({
-							type : 'delete',
-							success : true
-						}));
-					});
-				}
+				delete_user(authorized, isAdmin, msg, client, ws);
 				break;
 			default:
 				console.log('uknown command');
@@ -187,7 +130,6 @@ var register_new_user = function(websocket, redisClient, msg){
 		new_user.password = msg.password;
 		new_user.firstname = msg.firstname;
 		new_user.lastname = msg.lastname;
-		console.log('Adding new user!');
 		redisClient.set('user:' + msg.username, JSON.stringify(new_user));
 		websocket.send(JSON.stringify({
 			type : 'register',
@@ -195,3 +137,85 @@ var register_new_user = function(websocket, redisClient, msg){
 		}));
 	});
 };
+
+var handle_message = function(message, username, authorized, redisClient, websocket){
+	if (!authorized) {
+		websocket.send(JSON.stringify({type: 'error', text : 'You are not authorized!'}));
+		return;
+	}
+	var msg = new Object();
+	msg.user = username;
+	msg.text = message.text;
+	msg.date = Date.now();
+	redisClient.set('message:' + msg.date.toString(), JSON.stringify(msg));
+	msg.type = 'message';
+	broadcast(msg);
+};
+
+var handle_logout = function(websocket){
+	for (var i = 0; i < onlineUsers.length; i++)
+		if (onlineUsers[i].websocket === websocket) {
+			onlineUsers.splice(i, 1);
+			break;
+		}
+	websocket.send(JSON.stringify({type : 'logout', success : true}));
+};
+
+var handle_online = function(authorized, redisClient, websocket){
+	if (authorized)
+		async.map(
+			onlineUsers, 
+			function(x, callback){
+				redisClient.get('user:' + x.username, function(err, value){
+					callback(null, value);
+				});
+			},
+			function(err, results){
+				websocket.send(JSON.stringify({
+					type : 'online',
+					online : results.map(function(x){
+						var user = JSON.parse(x);
+						if (user != null)
+							user.password = '';
+						return user;
+					})
+				}));
+			});
+	else 
+		websocket.send(JSON.stringify({
+			type : 'online',
+			online : []
+		}));
+};
+
+var delete_user = function(authorized, isAdmin, message, redisClient, websocket){
+	if (authorized && isAdmin && message.username != 'admin') {
+		redisClient.keys('user:' + message.username, function(err, keys){
+			keys.forEach(function(x){
+				redisClient.del(x);
+			});
+			for (var i = 0; i < onlineUsers.length; i++) {
+				if (onlineUsers[i].username === message.username){
+					onlineUsers[i].websocket.send(JSON.stringify({
+						type : 'logout',
+						success : true
+					}));
+					onlineUsers.splice(i, 1);
+					break;
+				}
+			}
+			websocket.send(JSON.stringify({
+				type : 'delete',
+				success : true
+			}));
+		});
+	}
+};
+
+module.exports.onlineUsers = onlineUsers;
+module.exports.wss = wss;
+module.exports.handle_logout = handle_logout;
+module.exports.handle_online = handle_online;
+module.exports.register_new_user = register_new_user;
+module.exports.delete_user = delete_user;
+module.exports.handle_message = handle_message;
