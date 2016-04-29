@@ -10,7 +10,7 @@ describe('Testing db', function(){
 		dbClient.keys('*', function(err, keys){
 			keys.forEach(function(x){dbClient.del(x);});
 		});
-		testArray = ['aaa', 'bbb', 'ccc', 'ddd'];
+		var testArray = ['aaa', 'bbb', 'ccc', 'ddd'];
 		testArray.forEach(function(x){
 			dbClient.set(testArray.indexOf(x).toString(), x);
 		});
@@ -69,7 +69,7 @@ describe('Testing functionality', function(){
 	websocket.on('open', function(){
 		websocket.send(JSON.stringify({type: 'authorize', username : 'admin', password : 'admin'}));
 	});
-	messages = [];
+	var messages = [];
 	websocket.on('message', function(message, flags){
 		messages.push(JSON.parse(message));
 	});
