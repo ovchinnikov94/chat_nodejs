@@ -6,7 +6,6 @@ var eslint = require('gulp-eslint');
 gulp.task('default', ['watch']);
 
 gulp.task('build', ['libs']);
-gulp.task('test', function(){});
 
 
 gulp.task('lint', function(){
