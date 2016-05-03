@@ -6,7 +6,6 @@ var wss = new WebSocketServer({
 });
 
 var onlineUsers = [];
-var onlineUsersCount = 0;
 
 
 wss.on('connection', function(ws){
@@ -17,7 +16,7 @@ wss.on('connection', function(ws){
 	
 
 	ws.on('close', function(){
-		console.log('User went out');
+		//console.log('User went out');
 		for (var i = 0; i < onlineUsers.length; i++)
 			if (onlineUsers[i].websocket === ws) {
 				onlineUsers.splice(i, 1);
@@ -25,10 +24,11 @@ wss.on('connection', function(ws){
 			}
 	});
 
+	/*
 	client.on('error', function(err){
-		console.log('Error occured: ' + err);
+		//console.log('Error occured: ' + err);
 	});
-
+	*/
 	ws.on('message', function(message) {
 		var msg = JSON.parse(message);
 		switch(msg.type) {
@@ -85,7 +85,7 @@ wss.on('connection', function(ws){
 				delete_user(authorized, isAdmin, msg, client, ws);
 				break;
 			default:
-				console.log('uknown command');
+				//console.log('uknown command');
 		}
 
 	});
@@ -101,7 +101,7 @@ var send_prev_messages = function(websocket, redisClient){
 			for (var i = keys.length - 11; i >= 0; i--)
 				redisClient.del(keys[i]);
 			keys = keys.slice(-10);
-			for (var i = 0; i < keys.length; i++) {
+			for (i = 0; i < keys.length; i++) {
 				redisClient.get(keys[i], function(err, value){
 					var v = JSON.parse(value);
 					v.type = 'message';
@@ -210,6 +210,7 @@ var delete_user = function(authorized, isAdmin, message, redisClient, websocket)
 		});
 	}
 };
+
 
 module.exports.onlineUsers = onlineUsers;
 module.exports.wss = wss;

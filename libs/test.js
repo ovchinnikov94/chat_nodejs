@@ -111,7 +111,7 @@ describe('Testing functionality', function(){
 					username : 'test1',
 					password : 'test1',
 					firstname : 'TEST',
-					lastname : 'TEST',
+					lastname : 'TEST'
 				});
 			setTimeout(function(){
 				chai.assert.notEqual(messages.filter(function(x){return x.type === 'register';}).length, 0, 'response registering');

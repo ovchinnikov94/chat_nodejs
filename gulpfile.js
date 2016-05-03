@@ -10,21 +10,9 @@ gulp.task('build', ['libs']);
 
 gulp.task('lint', function(){
 	gulp.src('libs/**/*.js')
-		.pipe(eslint({
-			'parserOptions' : {
-				'ecmaVersion' : '6'
-			},
-			'extends' : 'eslint:recommended',
-			'env' : {
-				'node' : 'true'
-			},
-			'rules': {
-				'space-before-function-paren' : 
-					[2, {"anonymous": "always", "named": "never"}]
-				}
-			}))
-		.pipe(eslint.formatEach('compact', process.stderr));
-		//.pipe(eslint.failOnError());
+		.pipe(eslint())
+		.pipe(eslint.formatEach('compact', process.stderr))
+		.pipe(eslint.failOnError());
 });
 
 gulp.task('libs', function(){
