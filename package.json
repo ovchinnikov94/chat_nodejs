@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npm run lint && ./node_modules/.bin/babel-node ./node_modules/.bin/babel-istanbul cover ./node_modules/mocha/bin/_mocha libs/test.js",
-    "build": "./node_modules/.bin/gulp build",
-    "watch": "./node_modules/.bin/gulp watch",
-    "lint": "./node_modules/.bin/gulp lint"
+    "test": "npm run lint && babel-node ./node_modules/.bin/babel-istanbul cover _mocha libs/test.js",
+    "build": "gulp build",
+    "watch": "gulp watch",
+    "lint": "gulp lint"
   },
   "author": "",
   "license": "ISC",
@@ -22,7 +22,6 @@
     "babel-preset-stage-3": "^6.5.0",
     "bluebird": "^3.3.4",
     "chai": "^3.5.0",
-    "estraverse-fb": "^1.3.1",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-changed": "^1.3.0",
