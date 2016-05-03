@@ -13,3 +13,7 @@ addons:
       - g++-4.8
 services:
   - redis-server
+before_install:
+  - npm install -g codecov
+after_success:
+  - codecov
