@@ -211,7 +211,7 @@ var delete_user = function(authorized, isAdmin, message, redisClient, websocket)
 	}
 };
 
-
+/*
 module.exports.onlineUsers = onlineUsers;
 module.exports.wss = wss;
 module.exports.handle_logout = handle_logout;
@@ -219,3 +219,13 @@ module.exports.handle_online = handle_online;
 module.exports.register_new_user = register_new_user;
 module.exports.delete_user = delete_user;
 module.exports.handle_message = handle_message;
+*/
+module.exports = {
+	onlineUsers,
+	wss,
+	handle_logout,
+	handle_online,
+	register_new_user,
+	delete_user,
+	handle_message
+};
